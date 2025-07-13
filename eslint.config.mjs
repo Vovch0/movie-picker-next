@@ -1,23 +1,50 @@
-import js from "@eslint/js";
-import globals from "globals";
+import nextPlugin from "@next/eslint-plugin-next";
+import reactPlugin from "eslint-plugin-react";
+import hooksPlugin from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
-import pluginReact from "eslint-plugin-react";
 import json from "@eslint/json";
 import markdown from "@eslint/markdown";
-import next from "eslint-config-next";
 import css from "@eslint/css";
-import { defineConfig } from "eslint/config";
 
-
-export default defineConfig([
-  next,
-  { files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"], plugins: { js }, extends: ["js/recommended"] },
-  { files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"], languageOptions: { globals: globals.browser } },
-  tseslint.configs.recommended,
-  pluginReact.configs.flat.recommended,
-  { files: ["**/*.json"], plugins: { json }, language: "json/json", extends: ["json/recommended"] },
-  { files: ["**/*.jsonc"], plugins: { json }, language: "json/jsonc", extends: ["json/recommended"] },
-  { files: ["**/*.json5"], plugins: { json }, language: "json/json5", extends: ["json/recommended"] },
-  { files: ["**/*.md"], plugins: { markdown }, language: "markdown/commonmark", extends: ["markdown/recommended"] },
-  { files: ["**/*.css"], plugins: { css }, language: "css/css", extends: ["css/recommended"] },
-]);
+/** @type {import('eslint').Linter.FlatConfig[]} */
+export default [
+  ...tseslint.configs.recommended,
+  {
+    files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
+    plugins: {
+      "@next/next": nextPlugin,
+      react: reactPlugin,
+      "react-hooks": hooksPlugin,
+    },
+    rules: {
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs["core-web-vitals"].rules,
+      "react/react-in-jsx-scope": "off",
+    },
+  },
+  {
+    files: ["**/*.json"],
+    plugins: { json },
+    rules: json.configs.recommended.rules,
+  },
+  {
+    files: ["**/*.jsonc"],
+    plugins: { json },
+    rules: json.configs.recommended.rules,
+  },
+  {
+    files: ["**/*.json5"],
+    plugins: { json },
+    rules: json.configs.recommended.rules,
+  },
+  {
+    files: ["**/*.md"],
+    plugins: { markdown },
+    processor: "markdown/markdown",
+  },
+  {
+    files: ["**/*.css"],
+    plugins: { css },
+    rules: css.configs.recommended.rules,
+  },
+];
